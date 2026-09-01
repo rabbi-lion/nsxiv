@@ -1,224 +1,127 @@
-[![nsxiv](https://codeberg.org/nsxiv/pages/raw/branch/master/img/logo.png)](https://codeberg.org/nsxiv/nsxiv)
+# nsxiv
 
-[![Codeberg](https://img.shields.io/badge/Hosted_at-Codeberg-%232185D0?style=flat-square&logo=CodeBerg)](https://codeberg.org/nsxiv/nsxiv)
-[![tags](https://img.shields.io/github/v/tag/nsxiv/nsxiv?style=flat-square)](https://codeberg.org/nsxiv/nsxiv/tags)
-[![license](https://img.shields.io/badge/license-GPL--2.0%2B-lightgreen?style=flat-square)](https://codeberg.org/nsxiv/nsxiv/src/branch/master/LICENSE)
-[![loc](https://img.shields.io/endpoint?url=https://ghloc.vercel.app/api/nsxiv/nsxiv/badge?filter=.c$,.h$&color=red&style=flat-square&label=Lines%20of%20Code)](https://codeberg.org/nsxiv/nsxiv)
+My customized build of [nsxiv](https://github.com/nsxiv/nsxiv).
 
-**Neo (or New or Not) Simple (or Small or Suckless) X Image Viewer**
---------------------------------------------------------------------
+This build is used by my Arch Linux and Debian dwm setup.
 
-nsxiv is a fork of the now-unmaintained [sxiv](https://github.com/xyb3rt/sxiv)
-with the purpose of being a (mostly) drop-in replacement for sxiv, maintaining its
-interface and adding simple, sensible features. nsxiv is free software licensed
-under GPL-2.0-or-later and aims to be easy to modify and customize.
+`nsxiv` is compiled from source from this repository by `dwm-install`; it is not installed from the Arch Linux or Debian repositories.
 
-Please file a bug report if something does not work as documented or expected on
-[Codeberg] after making sure you are using the latest release. If you're looking
-to migrate from `sxiv`, see [MIGRATION]. Contributions are welcome, see
-[CONTRIBUTING] to get started.
+## Installation
 
-[Codeberg]: https://codeberg.org/nsxiv/nsxiv/issues/new
-[CONTRIBUTING]: etc/CONTRIBUTING.md#contribution-guideline
-[MIGRATION]: etc/MIGRATION.md
+Clone the repository:
 
+```sh
+git clone https://github.com/rabbi-lion/nsxiv.git
+cd nsxiv
+```
 
-Features
---------
+Build and install:
 
-* Basic image operations like zooming, panning, rotating
-* Basic support for animated/multi-frame images
-* Thumbnail mode: grid of selectable previews of all images
-* Ability to cache thumbnails for fast re-loading
-* Automatically refreshing modified images
-* Customizable keyboard and mouse mappings via `config.h`
-* Scriptability via `key-handler`
-* Displaying image information in status bar via `image-info` & `thumb-info`
-* Customizable window title via `win-title`
+```sh
+make
+sudo make install-all
+```
 
+On a fresh system, the recommended method is to use my post-install script:
 
-Screenshots
------------
+```text
+https://github.com/rabbi-lion/dwm-install
+```
 
-**Image mode with default colors:**
+## Usage
 
-![Image](https://codeberg.org/nsxiv/pages/raw/branch/master/img/image.png "Image mode")
+`nsxiv` is used as the default image viewer in my dwm environment.
 
-**Thumbnail mode with custom colors:**
+The surrounding setup provides:
 
-![Thumb](https://codeberg.org/nsxiv/pages/raw/branch/master/img/thumb.png "Thumb mode")
+- directory-aware image opening
+- Thunar integration
+- Trash support
+- common image MIME associations
+- keyboard handling
+- a user-local desktop entry
 
+The helper scripts and desktop entry are provided by my dotfiles repository:
 
-Installing via package manager
-------------------------------
+```text
+https://github.com/rabbi-lion/dotfiles
+```
 
-<a href="https://repology.org/project/nsxiv/versions">
-  <img align="right" width="192" src="https://repology.org/badge/vertical-allrepos/nsxiv.svg">
-</a>
+## Thunar integration
 
-nsxiv is available on the following distributions/repositories. If you don't see
-your distro listed here, either contact your distro's package maintainer or
-consider packaging it yourself and adding it to the respective community repo.
+Images opened from Thunar use:
 
+```text
+~/.local/bin/nsxiv-rifle
+```
 
-Dependencies
-------------
+This helper opens the selected image together with the other supported images in the same directory.
 
-nsxiv requires the following software to be installed:
+The user-local desktop entry is:
 
-  * X11
-  * Imlib2 (version 1.11 or later, built with X11 support)
+```text
+~/.local/share/applications/nsxiv.desktop
+```
 
-The following dependencies are optional:
+## Trash support
 
-  * `inotify`<sup>\*</sup>: Used for auto-reloading images on change.
-    Disabled via `HAVE_INOTIFY=0`.
-  * `libXft`, `freetype2`, `fontconfig`: Used for the status bar.
-    Disabled via `HAVE_LIBFONTS=0`.
-  * `libexif`: Used for auto-orientation and exif thumbnails.
-    Disable via `HAVE_LIBEXIF=0`.
+The nsxiv key handler is:
 
-Please make sure to install the corresponding development packages in case that
-you want to build nsxiv on a distribution with separate runtime and development
-packages (e.g. \*-dev on Debian).
+```text
+~/.config/nsxiv/exec/key-handler
+```
 
-\* [inotify][] is a Linux-specific API for monitoring filesystem changes.
-  It's not natively available on `*BSD` systems but can be enabled via
-  installing and linking against [libinotify-kqueue][].
+It allows images to be moved to Trash from nsxiv.
 
-[inotify]: https://www.man7.org/linux/man-pages/man7/inotify.7.html
-[libinotify-kqueue]: https://github.com/libinotify-kqueue/libinotify-kqueue
+## Image associations
 
+`dwm-install` configures nsxiv as the default viewer for common image formats, including:
 
-Building
---------
+```text
+JPEG
+PNG
+GIF
+WebP
+BMP
+TIFF
+SVG
+AVIF
+HEIF
+HEIC
+JPEG XL
+JPEG 2000
+```
 
-nsxiv is built using the commands:
+PostScript is intentionally not assigned to nsxiv so document associations such as Zathura remain intact.
 
-    $ make
+## Scaling
 
-You can pass `HAVE_X=0` to `make` to disable an optional dependency.
-For example:
+Stock nsxiv scaling behavior is preserved.
 
-    $ make HAVE_LIBEXIF=0
+No forced `SCALE_FIT` source modification is used, and the file-manager helper does not force `-s f`.
 
-will disable `libexif` support. Alternatively they can be disabled via editing
-`config.mk`. `OPT_DEP_DEFAULT=0` can be used to disable all optional
-dependencies.
+## Configuration
 
-Installing nsxiv:
+nsxiv configuration is maintained in this repository.
 
-    # make install
+After making source changes, rebuild and reinstall:
 
-Installing desktop entry:
+```sh
+sudo make clean install-all
+```
 
-    # make install-desktop
+## Related repositories
 
-Installing icons:
+```text
+https://github.com/rabbi-lion/dwm-install
+https://github.com/rabbi-lion/dotfiles
+https://github.com/rabbi-lion/dwm
+https://github.com/rabbi-lion/st
+https://github.com/rabbi-lion/dwmblocks
+```
 
-    # make install-icon
+## License
 
-Installing all of the above:
+This repository retains the original nsxiv GNU General Public License.
 
-    # make install-all
-
-Please note, that these requires root privileges.
-By default, nsxiv is installed using the prefix `/usr/local`, so the full path
-of the executable will be `/usr/local/bin/nsxiv`, the `.desktop` entry will be
-`/usr/local/share/applications/nsxiv.desktop` and the icon path will be
-`/usr/local/share/icons/hicolor/{size}/apps/nsxiv.png`.
-
-You can install nsxiv into a directory of your choice by changing this command to:
-
-    $ make PREFIX="/your/dir" install
-
-Example scripts are installed using `EGPREFIX` which defaults to
-`/usr/local/share/doc/nsxiv/examples`. You can change `EGPREFIX` the same way
-you can change `PREFIX` shown above.
-
-The build-time specific settings of nsxiv can be found in the file *config.h*.
-Please check and change them, so that they fit your needs.
-If the file *config.h* does not already exist, then you have to create it with
-the following command:
-
-    $ make config.h
-
-
-Usage
------
-
-Refer to the man-page for the documentation:
-
-    $ man nsxiv
-
-You may also view the man-page [online](https://nsxiv.codeberg.page/man/).
-However, note that the online man-page might not accurately represent your local
-copy.
-
-
-F.A.Q.
-------
-
-* Can I open remote urls with nsxiv? <br>
-Yes, see [nsxiv-url](https://codeberg.org/nsxiv/nsxiv-extra/src/branch/master/scripts/nsxiv-url)
-
-* Can I open all the images in a directory? <br>
-Yes, see [nsxiv-rifle](https://codeberg.org/nsxiv/nsxiv-extra/src/branch/master/scripts/nsxiv-rifle)
-
-* Can I set default arguments for nsxiv? <br>
-Yes, see [nsxiv-env](https://codeberg.org/nsxiv/nsxiv-extra/src/branch/master/scripts/nsxiv-env)
-
-* Can I pipe images into nsxiv? <br>
-Yes, see [nsxiv-pipe](https://codeberg.org/nsxiv/nsxiv-extra/src/branch/master/scripts/nsxiv-pipe)
-
-You may also wish to see the [known issues](https://codeberg.org/nsxiv/nsxiv/issues/242).
-
-
-Customization
--------------
-
-The main method of customizing nsxiv is by setting values for the variables in *config.h*,
-or by using Xresources as explained in the manual. If these options are not sufficient,
-you may implement your own features by following
-[this guide](https://codeberg.org/nsxiv/nsxiv-extra/src/branch/master/CUSTOMIZATION.md).
-
-Due to our limited [project scope](etc/CONTRIBUTING.md#project-scope), certain features or
-customization cannot be merged into nsxiv mainline. Following the spirit of suckless
-software, we host the [nsxiv-extra](https://codeberg.org/nsxiv/nsxiv-extra) repo where users
-are free to submit whatever patches or scripts they wish.
-
-If you think your custom features can be beneficial for the general user base and is within
-our project scope, please submit it as a pull request on this repository, then we *may*
-merge it to mainline.
-
-Description on how to use or submit patches can be found on
-nsxiv-extra's [README](https://codeberg.org/nsxiv/nsxiv-extra).
-
-
-Download
---------
-
-You can [browse](https://codeberg.org/nsxiv/nsxiv) the source code repository
-on Codeberg or get a copy using git with the following command:
-
-    $ git clone https://codeberg.org/nsxiv/nsxiv.git
-
-You can view the changelog [here](etc/CHANGELOG.md)
-
-
-Similar projects
-----------------
-
-If nsxiv isn't able to fit your needs, check out the image viewer section of
-**[suckless rocks](https://suckless.org/rocks)** to find other minimal image
-viewers to try out.
-
-Below are a couple other lesser known projects not listed in suckless rocks.
-
-* [MAGE](https://codeberg.org/explosion-mental/mage):
-  A smaller/more-suckless version of sxiv.
-* [div](https://codeberg.org/TAAPArthur/div):
-  Minimal and extensive, aimed at C devs willing to build their own features.
-* [mpv-image-viewer](https://github.com/occivink/mpv-image-viewer):
-  Lua script to turn mpv into an image viewer. Supports thumbnails via
-  [mpv-gallery-view](https://github.com/occivink/mpv-gallery-view).
+See `LICENSE` for the full license text.
