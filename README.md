@@ -107,7 +107,7 @@ nsxiv configuration is maintained in this repository.
 After making source changes, rebuild and reinstall:
 
 ```sh
-sudo make clean install-all
+sudo make clean install
 ```
 
 ## Related repositories
