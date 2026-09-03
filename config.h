@@ -99,7 +99,7 @@ static const KeySym KEYHANDLER_ABORT = XK_Escape;
 /* keyboard mappings for image and thumbnail mode: */
 static bool run_key_handler(const char *, unsigned int);
 
-bool
+static bool
 cg_trash(arg_t _)
 {
 	return run_key_handler("Delete", 0);
