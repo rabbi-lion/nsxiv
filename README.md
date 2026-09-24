@@ -173,16 +173,6 @@ source changes, rebuild and reinstall:
 sudo make clean install
 ```
 
-## Related repositories
-
-```
-https://github.com/rabbi-lion/dwm-install
-https://github.com/rabbi-lion/dotfiles
-https://github.com/rabbi-lion/dwm
-https://github.com/rabbi-lion/st
-https://github.com/rabbi-lion/dwmblocks
-```
-
 ## License
 
 This repository retains the original nsxiv GNU General Public
